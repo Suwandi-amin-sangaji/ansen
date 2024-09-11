@@ -1,0 +1,154 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container-xxl flex-grow-1 container-p-y">
+  <div class="row">
+    <div class="col-lg-12 mb-4 order-0">
+      <div class="card">
+        <div class="d-flex align-items-end row">
+          <div class="col-sm-7">
+            <div class="card-body">
+              <h5 class="card-title text-primary">
+                Hasil Analisis 🎉
+              </h5>
+              <p class="mb-4">
+                Di hasil Ini Kita Mengenal Hasil Analisis Dari Model nbsvm (Naive Multi-Class Support Vector Machine)
+                Melalui Word Cloud dan Pie Chart
+              </p>
+            </div>
+          </div>
+          <div class="col-sm-5 text-center text-sm-left">
+            <div class="card-body pb-0 px-0 px-md-4">
+              <img src="{{ url_for('static', filename='assets/img/illustrations/man-with-laptop-light.png') }}"
+                height="140" alt="View Badge User"
+                data-app-dark-img="{{ url_for('static', filename='assets/img/illustrations/man-with-laptop-dark.png') }}"
+                data-app-light-img="{{ url_for('static', filename='assets/img/illustrations/man-with-laptop-light.png') }}" />
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="row">
+    <!-- Order Statistics -->
+    <div class="col-md-12 col-lg-12 col-xl-12 order-0 mb-4">
+      <div class="card h-100">
+        <div class="card-header d-flex align-items-center justify-content-between pb-0">
+          <div class="card-title mb-3">
+            <h5 class="m-0 me-2">Hasil Sentiment Analisis nbsvm</h5>
+          </div>
+        </div>
+        <div class="container">
+          <div class="row">
+
+            <!-- Wordcloud Card -->
+            <div class="col-md-6 col-12">
+              <div class="card">
+                <div class="card-header">
+                  <h5 class="card-title">Wordcloud</h5>
+                </div>
+                <div class="card-body">
+                  {% if hasil_nbsvm %}
+                  <a type="button" data-bs-toggle="modal" data-bs-target="#wordclodnbsvm">
+                    <img src="{{ url_for('static', filename='image/nbsvm/wordcloud_nbsvm.png') }}" alt="Word Cloud" width="100%">
+                  </a>
+
+                  <!-- Modal -->
+                  <div class="modal fade" id="wordclodnbsvm" aria-labelledby="modalToggleLabel" tabindex="-1" style="display: none;" aria-hidden="true">
+                    <div class="modal-dialog modal-dialog-centered">
+                      <div class="modal-content">
+                        <img src="{{ url_for('static', filename='image/nbsvm/wordcloud_nbsvm.png') }}" alt="Word Cloud" width="100%">
+                      </div>
+                    </div>
+                  </div>
+                  {% else %}
+                  <p>Hasil nbsvm belum tersedia.</p>
+                  {% endif %}
+                </div>
+              </div>
+            </div>
+
+            <!-- Pie Chart Card -->
+            <div class="col-md-6 col-12">
+              <div class="card">
+                <div class="card-header">
+                  <h5 class="card-title">Pie Chart</h5>
+                </div>
+                <div class="card-body">
+                  {% if hasil_nbsvm %}
+                  <a type="button" data-bs-toggle="modal" data-bs-target="#pienbsvm">
+                    <img src="{{ url_for('static', filename='image/nbsvm/pie_chart_nbsvm.png') }}" alt="Pie Chart" width="100%">
+                  </a>
+
+                  <!-- Modal -->
+                  <div class="modal fade" id="pienbsvm" aria-labelledby="modalToggleLabel" tabindex="-1" style="display: none;" aria-hidden="true">
+                    <div class="modal-dialog modal-dialog-centered">
+                      <div class="modal-content">
+                        <img src="{{ url_for('static', filename='image/nbsvm/pie_chart_nbsvm.png') }}" alt="Pie Chart" width="100%">
+                      </div>
+                    </div>
+                  </div>
+                  {% else %}
+                  <p>Hasil nbsvm belum tersedia.</p>
+                  {% endif %}
+                </div>
+              </div>
+            </div>
+          </div>
+          <br>
+
+          <!-- Confusion Matrix -->
+          {% if cm_nbsvm is not none and cm_nbsvm|length == 3 %}
+          <h5 class="text-center">Confusion Matrix nbsvm</h5>
+          <table class="table table-bordered">
+            <thead>
+              <tr>
+                <th></th>
+                <th>Negative</th>
+                <th>Neutral</th>
+                <th>Positive</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for i in range(3) %}
+              <tr>
+                <td><b>{{ ['Negative', 'Neutral', 'Positive'][i] }}</b></td>
+                {% for j in range(3) %}
+                <td>{{ cm_nbsvm[i][j] if cm_nbsvm|length > i and cm_nbsvm[i]|length > j else 0 }}</td>
+                {% endfor %}
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+          {% else %}
+          <p>Belum ada data matrix</p>
+          {% endif %}
+
+          <br>
+          <!-- Tampilkan metrik evaluasi dari nbsvm jika tersedia -->
+          {% if hasil_nbsvm %}
+          <div class="justify-content-center mt-0">
+            <h5 class="text-center">Classification Report</h5>
+            <a type="button" data-bs-toggle="modal" data-bs-target="#reportnbsvm">
+              <img src="{{ url_for('static', filename='image/report/nbsvm/classification_report_nbsvm.png') }}" alt="Classification Report" width="100%" style="display: block; width: 100%;">
+            </a>
+
+            <!-- Modal -->
+            <div class="modal fade" id="reportnbsvm" aria-labelledby="modalToggleLabel" tabindex="-1" style="display: none;" aria-hidden="true">
+              <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content">
+                  <img src="{{ url_for('static', filename='image/report/nbsvm/classification_report_nbsvm.png') }}" alt="Classification Report" width="150%">
+                </div>
+              </div>
+            </div>
+          </div>
+          {% else %}
+          <p>Belum ada data laporan.</p>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

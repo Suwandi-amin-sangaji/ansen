@@ -1,0 +1,209 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container-xxl flex-grow-1 container-p-y">
+    <div class="row">
+        <div class="col-lg-12 mb-4 order-0">
+            <div class="card">
+                <div class="d-flex align-items-end row">
+                    <div class="col-sm-7">
+                        <div class="card-body">
+                            <h5 class="card-title text-primary">
+                                Algoritma NBSVM 🎉
+                            </h5>
+                            <p class="mb-4">
+                                NBSVM, atau Naive Bayes SVM, adalah algoritma hibrida yang menggabungkan kekuatan dari
+                                dua metode populer dalam pembelajaran mesin: Naive Bayes (NB) dan Support Vector Machine
+                                (SVM). Algoritma ini biasanya digunakan untuk tugas klasifikasi teks dan dirancang untuk
+                                mengatasi beberapa kelemahan yang ada pada Naive Bayes dan SVM jika digunakan secara
+                                terpisah.
+                            </p>
+
+                            <form action="{{ url_for('nbsvm') }}" method="post" enctype="multipart/form-data">
+                                <div class="form-group">
+                                    <label for="file">Masukkan File CSV Hasil Processing Data</label>
+                                    <input type="file" class="form-control" id="file" name="file" accept=".csv"
+                                        required>
+                                </div>
+                                <br>
+                                <div class="form-group">
+                                    <label for="n_svm">Pilih Karnel Model SVM</label>
+                                    <select class="form-select" id="svmDropdown" name="svmKarnel">
+                                        <option value="linear">Linear</option>
+                                        <option value="poly">Polynomial</option>
+                                        <option value="sigmoid">Sigmoid</option>
+                                        <option value="rbf">RBF (Radial Basis Function)</option>
+                                    </select>
+                                </div>
+                                <br>
+                                <div class="form-group">
+                                    <label for="split_ratio">Masukkan Split Ratio</label>
+                                    <input type="number" class="form-control" id="split_ratio" name="split_ratio"
+                                        min="0" max="1" step="0.1" required value="0.2">
+                                </div>
+                                <br>
+                                <button type="submit" class="btn btn-sm btn-outline-primary">Analisis</button>
+                            </form>
+
+                        </div>
+                    </div>
+                    <div class="col-sm-5 text-center text-sm-left">
+                        <div class="card-body pb-0 px-0 px-md-4">
+                            <img src="{{url_for('static', filename='assets/img/illustrations/man-with-laptop-light.png')}}"
+                                height="140" alt="View Badge User"
+                                data-app-dark-img="{{url_for('static', filename='assets/img/illustrations/man-with-laptop-dark.png')}}"
+                                data-app-light-img="{{url_for('static', filename='assets/img/illustrations/man-with-laptop-light.png')}}" />
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="loading" class="loading-overlay">
+            <div class="loading-content">
+                <div class="loading-spinner"></div>
+                <div class="loading-text">Membuatuhkan Waktu, Mohon Menunggu Sampai Proses Selesai</div>
+            </div>
+        </div>
+
+
+        {% if hasil_sentimen_nbsvm %}
+    
+
+        <div class="container">
+            <div class="card">
+                <div class="d-flex align-items-end row">
+                    <div class="col-sm-12">
+                        <div class="card-body">
+                            <h1 class="text-center">Hasil Analisis Sentimen NBSVM</h1>
+
+                            <div class="container-fluid">
+                                <div class="row">
+                                    <div class="table-responsive mb-4 mt-4">
+                                        <table class="table table-bordered">
+                                            <thead>
+                                                <tr>
+                                                    <th>Accuracy</th>
+                                                    <th>Precision</th>
+                                                    <th>Recall</th>
+                                                    <th>F1 Score</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <tr>
+                                                    <td>{{ accuracy }}</td>
+                                                    <td>{{ precision }}</td>
+                                                    <td>{{ recall }}</td>
+                                                    <td>{{ f1 }}</td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                    <!-- Word Cloud Section -->
+                                    <div class="col-md-4 col-12">
+                                        <div class="card">
+                                            <div class="card-header">
+                                                <h5 class="card-title">Wordcloud</h5>
+                                            </div>
+                                            <div class="card-body">
+                                                <img src="{{ url_for('static', filename='image/nbsvm/wordcloud_nbsvm.png') }}"
+                                                     alt="Word Cloud" class="img-fluid">
+                                            </div>
+                                        </div>
+                                    </div>
+                            
+                                    <!-- Confusion Matrix Section -->
+                                    <div class="col-md-4 col-12">
+                                        <div class="card">
+                                            <div class="card-header">
+                                                <h5 class="card-title text-center">Confusion Matrix NBSVM</h5>
+                                            </div>
+                                            <div class="card-body">
+                                                {% if confusion_matrix is not none and confusion_matrix|length == 3 %}
+                                                <div class="table-responsive">
+                                                    <table class="table table-bordered text-center">
+                                                        <thead>
+                                                            <tr>
+                                                                <th></th>
+                                                                <th>Negative</th>
+                                                                <th>Neutral</th>
+                                                                <th>Positive</th>
+                                                            </tr>
+                                                        </thead>
+                                                        <tbody>
+                                                            {% for i in range(3) %}
+                                                            <tr>
+                                                                <td><b>{{ ['Negative', 'Neutral', 'Positive'][i] }}</b></td>
+                                                                {% for j in range(3) %}
+                                                                <td>{{ confusion_matrix[i][j] if confusion_matrix|length > i and confusion_matrix[i]|length > j else 0 }}</td>
+                                                                {% endfor %}
+                                                            </tr>
+                                                            {% endfor %}
+                                                        </tbody>
+                                                    </table>
+                                                </div>
+                                                {% else %}
+                                                <p class="text-center">Belum ada data matrix</p>
+                                                {% endif %}
+                                            </div>
+                                        </div>
+                                    </div>
+                            
+                                    <!-- Pie Chart Section -->
+                                    <div class="col-md-4 col-12">
+                                        <div class="card">
+                                            <div class="card-header">
+                                                <h5 class="card-title">Pie Chart</h5>
+                                            </div>
+                                            <div class="card-body">
+                                                <img src="{{ url_for('static', filename='image/nbsvm/pie_chart_nbsvm.png') }}"
+                                                     alt="Pie Chart" class="img-fluid">
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            
+
+                            <div class="table-responsive">
+                                <table class="table table-bordered" id="example">
+                                    <thead>
+                                        <tr>
+                                            <th>Comments</th>
+                                            <th>Sentiment</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for result in hasil_sentimen_nbsvm %}
+                                        <tr>
+                                            <td>{{ result['comments'] }}</td>
+                                            <td>
+                                                {% if result['sentiment'] == 'Positive' %}
+                                                <span class="badge bg-label-success">{{ result['sentiment'] }}</span>
+                                                {% elif result['sentiment'] == 'Negative' %}
+                                                <span class="badge bg-label-danger">{{ result['sentiment'] }}</span>
+                                                {% else %}
+                                                <span class="badge bg-label-warning">{{ result['sentiment'] }}</span>
+                                                {% endif %}
+                                            </td>
+                                        </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        
+
+        {% else %}
+        <p class="text-center">Belum Ada Hasil.</p>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
