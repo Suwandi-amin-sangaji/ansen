@@ -10,12 +10,12 @@ from dotenv import load_dotenv
 L = instaloader.Instaloader()
 load_dotenv()
 
-USERNAME = os.getenv("USERNAME")
-PASSWORD = os.getenv("PASSWORD")
+USERNAME = 'suwandiaminsangaji'
+PASSWORD = 'W@ndy110494;'
 L.login(USERNAME, PASSWORD)
 
 # Pilih postingan Instagram berdasarkan URL atau ID
-POST_URL = 'https://www.instagram.com/p/C_PGVSVy-mH/?img_index=1'
+POST_URL = 'https://www.instagram.com/p/C_xo3pbybKh/'
 post = instaloader.Post.from_shortcode(L.context, POST_URL.split("/")[-2])
 
 # Dapatkan komentar dan balasannya dari postingan

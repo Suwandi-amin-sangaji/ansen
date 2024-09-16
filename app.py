@@ -49,7 +49,7 @@ def index():
 def submit_form():
     global scraped_data 
     url = request.form.get('url')
-    jumlah = int(request.form.get('Jumlah', 10))
+    jumlah = int(request.form.get('Jumlah', 50))
 
     # Panggil fungsi scraping
     scraped_data = scraping(url, jumlah)

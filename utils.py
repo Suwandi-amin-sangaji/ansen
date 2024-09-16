@@ -22,83 +22,19 @@ def format_tanggal(bulan):
     return now - timedelta(days=bulan * 30)
 
 
-# def scraping(post_url, jumlah_komentar):
-#     scraped_data = []
-#     # Buat instance Instaloader
-#     L = instaloader.Instaloader()
-
-#      # Login ke Instagram
-#     USERNAME = '192.168.18.0'
-#     PASSWORD = '@Iloveyou00'
-#     L.login(USERNAME, PASSWORD)
-
-#     # Dapatkan shortcode dari URL postingan
-#     shortcode = post_url.split("/")[-2]
-#     post = instaloader.Post.from_shortcode(L.context, shortcode)
-
-#     # Dapatkan komentar dan balasannya dari postingan
-#     comments = []
-#     usernames = []
-    
-#     # Counter untuk membatasi jumlah komentar yang diambil
-#     counter = 0
-
-#     for comment in post.get_comments():
-#         if counter >= jumlah_komentar:
-#             break
-
-#         # Simpan komentar utama
-#         usernames.append(comment.owner.username)
-#         comments.append(comment.text)
-#         counter += 1
-        
-#         # Periksa jika ada balasan (threaded comments)
-#         for reply in comment.answers:
-#             if counter >= jumlah_komentar:
-#                 break
-
-#             # Gabungkan balasan dengan komentar
-#             usernames.append(reply.owner.username)
-#             comments.append(reply.text)
-#             counter += 1
-
-#     # Simpan data ke dalam DataFrame pandas
-#     scraped_data = pd.DataFrame({
-#         'username': usernames,
-#         'comments': comments
-#     })
-
-#     return scraped_data
-
 def scraping(post_url, jumlah_komentar):
     scraped_data = []
+    # Buat instance Instaloader
     L = instaloader.Instaloader()
 
-    USERNAME = 'Masukkan Username IG'
-    
-    # Coba untuk memuat sesi login dari file jika ada
-    try:
-        L.load_session_from_file(USERNAME)
-        print("Sesi login berhasil dimuat.")
-    except FileNotFoundError:
-        print("Tidak ada sesi login yang tersimpan, login menggunakan username dan password.")
-        PASSWORD = 'Masukkan Password IG'
-        try:
-            L.login(USERNAME, PASSWORD)
-            # Simpan sesi login setelah berhasil login
-            L.save_session_to_file()
-            print("Login berhasil dan sesi telah disimpan.")
-        except instaloader.exceptions.LoginException as e:
-            print(f"Login gagal: {e}")
-            return None
+     # Login ke Instagram
+    USERNAME = ''
+    PASSWORD = ''
+    L.login(USERNAME, PASSWORD)
 
     # Dapatkan shortcode dari URL postingan
-    try:
-        shortcode = post_url.split("/")[-2]
-        post = instaloader.Post.from_shortcode(L.context, shortcode)
-    except Exception as e:
-        print(f"Error mendapatkan post dari shortcode: {e}")
-        return None
+    shortcode = post_url.split("/")[-2]
+    post = instaloader.Post.from_shortcode(L.context, shortcode)
 
     # Dapatkan komentar dan balasannya dari postingan
     comments = []
@@ -107,28 +43,24 @@ def scraping(post_url, jumlah_komentar):
     # Counter untuk membatasi jumlah komentar yang diambil
     counter = 0
 
-    try:
-        for comment in post.get_comments():
+    for comment in post.get_comments():
+        if counter >= jumlah_komentar:
+            break
+
+        # Simpan komentar utama
+        usernames.append(comment.owner.username)
+        comments.append(comment.text)
+        counter += 1
+        
+        # Periksa jika ada balasan (threaded comments)
+        for reply in comment.answers:
             if counter >= jumlah_komentar:
                 break
 
-            # Simpan komentar utama
-            usernames.append(comment.owner.username)
-            comments.append(comment.text)
+            # Gabungkan balasan dengan komentar
+            usernames.append(reply.owner.username)
+            comments.append(reply.text)
             counter += 1
-            
-            # Periksa jika ada balasan (threaded comments)
-            for reply in comment.answers:
-                if counter >= jumlah_komentar:
-                    break
-
-                # Gabungkan balasan dengan komentar
-                usernames.append(reply.owner.username)
-                comments.append(reply.text)
-                counter += 1
-    except Exception as e:
-        print(f"Error mengambil komentar: {e}")
-        return None
 
     # Simpan data ke dalam DataFrame pandas
     scraped_data = pd.DataFrame({
@@ -137,6 +69,74 @@ def scraping(post_url, jumlah_komentar):
     })
 
     return scraped_data
+
+# def scraping(post_url, jumlah_komentar):
+#     scraped_data = []
+#     L = instaloader.Instaloader()
+
+#     USERNAME = 'suwandiaminsangaji'
+    
+#     # Coba untuk memuat sesi login dari file jika ada
+#     try:
+#         L.load_session_from_file(USERNAME)
+#         print("Sesi login berhasil dimuat.")
+#     except FileNotFoundError:
+#         print("Tidak ada sesi login yang tersimpan, login menggunakan username dan password.")
+#         PASSWORD = 'W@ndy110494;'
+#         try:
+#             L.login(USERNAME, PASSWORD)
+#             # Simpan sesi login setelah berhasil login
+#             L.save_session_to_file()
+#             print("Login berhasil dan sesi telah disimpan.")
+#         except instaloader.exceptions.LoginException as e:
+#             print(f"Login gagal: {e}")
+#             return None
+
+#     # Dapatkan shortcode dari URL postingan
+#     try:
+#         shortcode = post_url.split("/")[-2]
+#         post = instaloader.Post.from_shortcode(L.context, shortcode)
+#     except Exception as e:
+#         print(f"Error mendapatkan post dari shortcode: {e}")
+#         return None
+
+#     # Dapatkan komentar dan balasannya dari postingan
+#     comments = []
+#     usernames = []
+    
+#     # Counter untuk membatasi jumlah komentar yang diambil
+#     counter = 0
+
+#     try:
+#         for comment in post.get_comments():
+#             if counter >= jumlah_komentar:
+#                 break
+
+#             # Simpan komentar utama
+#             usernames.append(comment.owner.username)
+#             comments.append(comment.text)
+#             counter += 1
+            
+#             # Periksa jika ada balasan (threaded comments)
+#             for reply in comment.answers:
+#                 if counter >= jumlah_komentar:
+#                     break
+
+#                 # Gabungkan balasan dengan komentar
+#                 usernames.append(reply.owner.username)
+#                 comments.append(reply.text)
+#                 counter += 1
+#     except Exception as e:
+#         print(f"Error mengambil komentar: {e}")
+#         return None
+
+#     # Simpan data ke dalam DataFrame pandas
+#     scraped_data = pd.DataFrame({
+#         'username': usernames,
+#         'comments': comments
+#     })
+
+#     return scraped_data
 
 
 def generate_csv(scraped_data):
