@@ -12,6 +12,7 @@ import re
 import string
 from nltk.stem import PorterStemmer
 import nltk
+nltk.download('punkt_tab')
 nltk.download('punkt')
 nltk.download('stopwords')
 import emoji
@@ -28,8 +29,8 @@ def scraping(post_url, jumlah_komentar):
     L = instaloader.Instaloader()
 
      # Login ke Instagram
-    USERNAME = ''
-    PASSWORD = ''
+    USERNAME = 'suwandiaminsangaji'
+    PASSWORD = 'W@ndy110494;'
     L.login(USERNAME, PASSWORD)
 
     # Dapatkan shortcode dari URL postingan
@@ -142,19 +143,16 @@ def scraping(post_url, jumlah_komentar):
 def generate_csv(scraped_data):
     csv_string = StringIO()
 
-    if not scraped_data.empty:
-        # Create a CSV writer object
-        csv_writer = csv.writer(csv_string)
+    # Buat CSV writer
+    csv_writer = csv.writer(csv_string)
 
-        # Write header
-        header = ['username', 'comments']
-        csv_writer.writerow(header)
+    # Tuliskan header
+    header = ['username', 'comments']
+    csv_writer.writerow(header)
 
-        # Write data rows
-        for _, row in scraped_data.iterrows():
-            csv_writer.writerow([row['username'], row['comments']])
-    else:
-        csv_writer.writerow(['username', 'comments'])  # Header only if no data
+    # Tuliskan baris data
+    for _, row in scraped_data.iterrows():
+        csv_writer.writerow([row['username'], row['comments']])
 
     csv_content = csv_string.getvalue()
     csv_string.close()

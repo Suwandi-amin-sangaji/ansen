@@ -83,6 +83,9 @@ def route_scraping():
 
 @app.route('/download', methods=['POST'])
 def download():
+    global scraped_data
+
+    # Memeriksa apakah scraped_data ada dan tidak kosong
     if scraped_data is None or scraped_data.empty:
         return "Error: No scraped data available."
 
@@ -93,6 +96,7 @@ def download():
         headers={'Content-Disposition': 'attachment; filename=comment_data.csv'}
     )
     return response
+
 
 @app.route("/processing")
 def processing():
