@@ -142,7 +142,8 @@ def nbsvm():
 
     if request.method == 'POST':
         uploaded_file = request.files['file']
-        kernel_choice = request.form['svmKarnel'].strip()
+        # kernel_choice = request.form['svmKarnel'].strip()
+        kernel_choice = request.form.get('svmKarnel', 'linear').strip()
         split_ratio = float(request.form['split_ratio'])
 
         if uploaded_file.filename != '':
