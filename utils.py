@@ -29,8 +29,8 @@ def scraping(post_url, jumlah_komentar):
     L = instaloader.Instaloader()
 
      # Login ke Instagram
-    USERNAME = 'suwandiaminsangaji'
-    PASSWORD = 'W@ndy110494;'
+    USERNAME = 'username'
+    PASSWORD = 'password'
     L.login(USERNAME, PASSWORD)
 
     # Dapatkan shortcode dari URL postingan
