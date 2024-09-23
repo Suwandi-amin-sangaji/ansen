@@ -10,8 +10,8 @@ from dotenv import load_dotenv
 L = instaloader.Instaloader()
 load_dotenv()
 
-USERNAME = 'suwandiaminsangaji'
-PASSWORD = 'W@ndy110494;'
+USERNAME = ''
+PASSWORD = ''
 L.login(USERNAME, PASSWORD)
 
 # Pilih postingan Instagram berdasarkan URL atau ID
