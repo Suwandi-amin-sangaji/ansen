@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, Response, url_for, redirect
+from flask import Flask, render_template, request, Response, url_for, redirect,jsonify,send_file
 import pandas as pd
 import os
 from utils import preprocessing, Labelling, clean_text, remove_empty_rows, generate_csv, generate_csv_processing, scraping
@@ -31,6 +31,10 @@ default_C_param = {
     'rbf': 1.0
 }
 
+# Folder dataset
+DATASET_FOLDER = 'dataset'  # Pastikan ini adalah folder yang benar
+
+
 @app.route("/")
 def index():
     return render_template("index.html")
@@ -45,24 +49,35 @@ def index():
 
 #     return render_template('scraping.html', data=scraped_data.to_dict(orient='records'))
 
-@app.route('/submit', methods=['POST'])
-def submit_form():
-    global scraped_data 
-    url = request.form.get('url')
-    jumlah = int(request.form.get('Jumlah', 50))
+@app.route('/dataset/<filename>', methods=['GET'])
+def get_dataset(filename):
+    # Cek apakah file ada
+    file_path = os.path.join(DATASET_FOLDER, filename)
+    if not os.path.isfile(file_path):
+        return jsonify({'error': 'File not found'}), 404
 
-    # Panggil fungsi scraping
-    scraped_data = scraping(url, jumlah)
+    # Baca data dari file CSV
+    try:
+        data = pd.read_csv(file_path)
+        # Mengonversi data ke dalam format JSON
+        data = data.to_dict(orient='records')
+        return jsonify(data)
+    except Exception as e:
+        return jsonify({'error': str(e)})
 
-    # Periksa apakah scraping berhasil (scraped_data tidak None)
-    if scraped_data is None:
-        return render_template('error.html', message="Data scraping gagal. Coba lagi.")
-    
-    # Jika scraping berhasil, tampilkan hasilnya
-    return render_template('scraping.html', data=scraped_data.to_dict(orient='records'))
+@app.route('/download/<filename>', methods=['GET'])
+def download(filename):
+    # Cek apakah file ada
+    file_path = os.path.join(DATASET_FOLDER, filename)
+    if not os.path.isfile(file_path):
+        return "Error: File not found.", 404
+
+    return send_file(file_path, as_attachment=True, download_name=filename)
 
 
-@app.route("/scraping", methods=["GET", "POST"])
+
+
+@app.route("/dataset", methods=["GET", "POST"])
 def route_scraping():
     scraped_data = None
     
@@ -81,21 +96,21 @@ def route_scraping():
     
     return render_template('scraping.html', data=scraped_data)
 
-@app.route('/download', methods=['POST'])
-def download():
-    global scraped_data
+# @app.route('/download', methods=['POST'])
+# def download():
+#     global scraped_data
 
-    # Memeriksa apakah scraped_data ada dan tidak kosong
-    if scraped_data is None or scraped_data.empty:
-        return "Error: No scraped data available."
+#     # Memeriksa apakah scraped_data ada dan tidak kosong
+#     if scraped_data is None or scraped_data.empty:
+#         return "Error: No scraped data available."
 
-    csv_data = generate_csv(scraped_data)
-    response = Response(
-        csv_data,
-        content_type='text/csv',
-        headers={'Content-Disposition': 'attachment; filename=comment_data.csv'}
-    )
-    return response
+#     csv_data = generate_csv(scraped_data)
+#     response = Response(
+#         csv_data,
+#         content_type='text/csv',
+#         headers={'Content-Disposition': 'attachment; filename=comment_data.csv'}
+#     )
+#     return response
 
 
 @app.route("/processing")

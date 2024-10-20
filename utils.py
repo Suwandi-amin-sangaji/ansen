@@ -22,25 +22,48 @@ def format_tanggal(bulan):
     now = datetime.now()
     return now - timedelta(days=bulan * 30)
 
+import instaloader
+import pandas as pd
+import time
+from instaloader.exceptions import ConnectionException
 
 def scraping(post_url, jumlah_komentar):
     scraped_data = []
+
     # Buat instance Instaloader
     L = instaloader.Instaloader()
 
-     # Login ke Instagram
+    # Login ke Instagram
     USERNAME = 'suwandiaminsangaji'
-    PASSWORD = 'W@ndy110494;'
-    L.login(USERNAME, PASSWORD)
+    PASSWORD = 'W@n&y110494;'
+    
+    try:
+        L.login(USERNAME, PASSWORD)
+    except ConnectionException as e:
+        print(f"Login failed: {e}")
+        return None
 
     # Dapatkan shortcode dari URL postingan
     shortcode = post_url.split("/")[-2]
-    post = instaloader.Post.from_shortcode(L.context, shortcode)
+    post = None
+
+    # Dapatkan post dari shortcode, dengan pengecekan rate-limit
+    for _ in range(3):  # Retry up to 3 times if ConnectionException occurs
+        try:
+            post = instaloader.Post.from_shortcode(L.context, shortcode)
+            break  # If successful, exit loop
+        except ConnectionException as e:
+            print(f"Error fetching post: {e}. Retrying in 60 seconds...")
+            time.sleep(60)  # Wait for 60 seconds before retrying
+
+    if post is None:
+        print("Failed to retrieve post after retries.")
+        return None
 
     # Dapatkan komentar dan balasannya dari postingan
     comments = []
     usernames = []
-    
+
     # Counter untuk membatasi jumlah komentar yang diambil
     counter = 0
 
@@ -52,7 +75,7 @@ def scraping(post_url, jumlah_komentar):
         usernames.append(comment.owner.username)
         comments.append(comment.text)
         counter += 1
-        
+
         # Periksa jika ada balasan (threaded comments)
         for reply in comment.answers:
             if counter >= jumlah_komentar:
@@ -70,6 +93,7 @@ def scraping(post_url, jumlah_komentar):
     })
 
     return scraped_data
+
 
 # def scraping(post_url, jumlah_komentar):
 #     scraped_data = []
