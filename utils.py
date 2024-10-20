@@ -34,8 +34,8 @@ def scraping(post_url, jumlah_komentar):
     L = instaloader.Instaloader()
 
     # Login ke Instagram
-    USERNAME = 'suwandiaminsangaji'
-    PASSWORD = 'W@n&y110494;'
+    USERNAME = 'username'
+    PASSWORD = 'password'
     
     try:
         L.login(USERNAME, PASSWORD)
