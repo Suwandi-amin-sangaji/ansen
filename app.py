@@ -33,11 +33,19 @@ default_C_param = {
 
 # Folder dataset
 DATASET_FOLDER = 'dataset'  # Pastikan ini adalah folder yang benar
-
-
 @app.route("/")
 def index():
-    return render_template("index.html")
+    # Count dataset 01, 02, 03, 04, and 05
+    counts = {}
+    total_count = 0
+    for i in range(1, 6):
+        df = pd.read_csv(f'dataset/{i:02}.csv')
+        count = len(df)
+        counts[f'count_{i:02}'] = count
+        total_count += count  # Add to total count
+    counts['total_count'] = total_count  # Store total count
+    return render_template("index.html", **counts)
+
 
 # @app.route('/submit', methods=['POST'])
 # def submit_form():

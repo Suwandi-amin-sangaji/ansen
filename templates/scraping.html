@@ -14,21 +14,11 @@
                 onchange="getDataset()"
               >
                 <option value="">Pilih Dataset</option>
-                <option value="comment_data1.csv">Dataset 1</option>
-                <option value="comment_data2.csv">Dataset 2</option>
-                <option value="comment_data3.csv">Dataset 3</option>
-                <option value="comment_data4.csv">Dataset 4</option>
-                <option value="comment_data5.csv">Dataset 5</option>
-                <option value="comment_data6.csv">Dataset 6</option>
-                <option value="comment_data7.csv">Dataset 7</option>
-
-                <option value="comment_data8.csv">Dataset 8</option>
-                <option value="comment_data9.csv">Dataset 9</option>
-                <option value="comment_data10.csv">Dataset 10</option>
-                <option value="comment_data11.csv">Dataset 11</option>
-                <option value="comment_data12.csv">Dataset 12</option>
-                <option value="comment_data13.csv">Dataset 13</option>
-                <option value="comment_data14.csv">Dataset 14</option>
+                <option value="01.csv">1. (ARUS) Abdul Faris Umlati dan Petrus Kasihiuw</option>
+                <option value="02.csv">2. (GAUL) Gabriel Assem - Lukman Wugaje</option>
+                <option value="03.csv">3. (ESA)  Elisa Kambu dan Ahmad Nausrau</option>
+                <option value="04.csv">4. (JOIN) Yoppie Onesimus Wayangkau dan Ibrahim Wugaje</option>
+                <option value="05.csv">5. (BERSINAR) Bernad Sagrim berpasangan dengan Sirajudin Bauw</option>
               </select>
               <button
                 class="btn btn-outline-primary mt-2"
@@ -80,57 +70,5 @@
   </div>
 </div>
 
-<script>
-  function getDataset() {
-    var dataset = document.getElementById("dataset").value;
 
-    if (!dataset) {
-      // Jika tidak ada dataset yang dipilih, bersihkan tabel
-      document.getElementById("tableBody").innerHTML = "";
-      return;
-    }
-
-    // Lakukan AJAX untuk mengambil data dari server
-    fetch("/dataset/" + encodeURIComponent(dataset))
-      .then((response) => {
-        if (!response.ok) {
-          throw new Error("Network response was not ok");
-        }
-        return response.json();
-      })
-      .then((data) => {
-        // Bersihkan isi tabel sebelum menampilkan data baru
-        const tableBody = document.getElementById("tableBody");
-        tableBody.innerHTML = "";
-
-        // Tampilkan data di tabel
-        data.forEach((item) => {
-          const row = document.createElement("tr");
-          row.innerHTML = `<td>${item.username || "N/A"}</td><td>${
-            item.comments || "N/A"
-          }</td>`;
-          tableBody.appendChild(row);
-        });
-      })
-      .catch((error) => {
-        console.error("Error fetching data:", error);
-        // Tampilkan pesan kesalahan di tabel
-        const tableBody = document.getElementById("tableBody");
-        tableBody.innerHTML =
-          '<tr><td colspan="2" class="text-danger">Gagal mengambil data. Silakan coba lagi.</td></tr>';
-      });
-  }
-
-  function downloadDataset() {
-    var dataset = document.getElementById("dataset").value;
-
-    if (!dataset) {
-      alert("Silakan pilih dataset terlebih dahulu.");
-      return;
-    }
-
-    // Redirect ke URL download
-    window.location.href = "/download/" + encodeURIComponent(dataset);
-  }
-</script>
 {% endblock %}
